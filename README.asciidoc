@@ -1,0 +1,62 @@
+Generate (supposedly unpredictable) random data and optionally format output.
+
+
+== Examples
+
+`--format=hex` is enabled by default:
+
+----
+% randbytes 8
+d3ace109e5c4baa8
+----
+
+The output from `--format=eschex` can be copy-pasted to string literals in program source:
+
+----
+% randbytes --format=eschex 8
+\xa8\x3f\x60\x15\xf9\xc4\x87\xd4
+----
+
+`--format=null` disables output formatting:
+
+----
+% randbytes --format=null 8 | xxd -plain
+ad7d738add313a7f
+----
+
+
+== Perf
+
+Generate 10 MiB of unpredictable data and format as plain hex:
+
+----
+% bench 'openssl rand -hex 10485760'
+benchmarking openssl rand -hex 10485760
+time                 2.538 s    (2.035 s .. 3.256 s)
+                     0.991 R²   (0.974 R² .. 1.000 R²)
+mean                 2.357 s    (2.268 s .. 2.480 s)
+std dev              116.5 ms   (3.077 ms .. 143.0 ms)
+variance introduced by outliers: 19% (moderately inflated)
+----
+
+----
+% bench 'dd if=/dev/urandom bs=4096 count=2560 | xxd -plain'
+benchmarking dd if=/dev/urandom bs=4096 count=2560 | xxd -plain
+time                 1.599 s    (1.478 s .. 1.803 s)
+                     0.998 R²   (0.995 R² .. 1.000 R²)
+mean                 1.539 s    (1.516 s .. 1.575 s)
+std dev              34.29 ms   (1.360 ms .. 42.61 ms)
+variance introduced by outliers: 19% (moderately inflated)
+----
+
+----
+% bench 'randbytes 10485760'
+benchmarking randbytes 10485760
+time                 395.8 ms   (337.8 ms .. 438.9 ms)
+                     0.997 R²   (0.996 R² .. 1.000 R²)
+mean                 351.6 ms   (333.4 ms .. 369.2 ms)
+std dev              21.87 ms   (9.960 ms .. 26.75 ms)
+variance introduced by outliers: 19% (moderately inflated)
+----
+
+Surprise.
